@@ -69,9 +69,9 @@ Remove
 
 </div>
 
-<h5>
+<h3>
 ₹${item.price * item.qty}
-</h5>
+</h3>
 
 </div>
 
