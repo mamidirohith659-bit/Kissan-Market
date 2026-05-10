@@ -57,13 +57,14 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 
 // ================= ADD TO CART =================
-document.querySelectorAll(".add-cart").forEach((btn, index) => {
+document.querySelectorAll(".add-cart").forEach((btn) => {
   btn.onclick = () => {
-    const card = btn.parentElement;
+    const card = btn.closest(".card");
 
     const name = card.querySelector("h3").innerText;
-    const price = card.querySelector(".new").innerText;
-    const img = card.querySelector("img").src;
+    const priceText = card.querySelector(".new").innerText;
+    const price = parseInt(priceText.replace("₹", ""));
+    const image = card.querySelector("img").src;
 
     const existing = cart.find(item => item.name === name);
 
@@ -73,7 +74,7 @@ document.querySelectorAll(".add-cart").forEach((btn, index) => {
       cart.push({
         name,
         price,
-        img,
+        image,
         qty: 1
       });
     }
@@ -86,10 +87,43 @@ document.querySelectorAll(".add-cart").forEach((btn, index) => {
 });
 
 
+// ================= BUY NOW =================
+document.querySelectorAll(".buy-now").forEach((btn) => {
+  btn.onclick = () => {
+    const card = btn.closest(".card");
+
+    const name = card.querySelector("h3").innerText;
+    const priceText = card.querySelector(".new").innerText;
+    const price = parseInt(priceText.replace("₹", ""));
+    const image = card.querySelector("img").src;
+
+    // We can either clear the cart and add this or just add this and go to checkout
+    // Let's just add it to ensure the user doesn't lose other items, but take them to checkout
+    const existing = cart.find(item => item.name === name);
+
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({
+        name,
+        price,
+        image,
+        qty: 1
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.location.href = "../payment list/checkout.html";
+  };
+});
+
+
 // ================= LOAD CART =================
 function loadCart() {
   const cartItems = document.getElementById("cartItems");
   const totalPrice = document.querySelector("#cartFooter .total-row span:last-child");
+
+  if (!cartItems || !totalPrice) return;
 
   cartItems.innerHTML = "";
 
@@ -102,14 +136,13 @@ function loadCart() {
   let total = 0;
 
   cart.forEach((item, index) => {
-    const priceNumber = parseInt(item.price.replace("₹", ""));
-    total += priceNumber * item.qty;
+    total += item.price * item.qty;
 
     const div = document.createElement("div");
     div.classList.add("cart-item");
 
     div.innerHTML = `
-      <img src="${item.img}">
+      <img src="${item.image}">
       <div class="cart-item-details">
         <h3>${item.name}</h3>
 
@@ -119,7 +152,7 @@ function loadCart() {
           <button class="plus">+</button>
         </div>
 
-        <p class="price">₹${priceNumber * item.qty}</p>
+        <p class="price">₹${item.price * item.qty}</p>
       </div>
 
       <div class="remove-item">✖</div>

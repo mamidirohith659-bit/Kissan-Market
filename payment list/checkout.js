@@ -1,26 +1,6 @@
 // CART DATA
 
-let cart =
-JSON.parse(localStorage.getItem("cart"))
-|| [
-
-{
-id:1,
-name:"Tomato",
-price:40,
-qty:1,
-image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN7x83eBrT1UJavjMLwOGn50weSsAuaKhk5Q&s"
-},
-
-{
-id:2,
-name:"Green Chilli",
-price:70,
-qty:2,
-image:"https://tiimg.tistatic.com/fp/1/006/004/fresh-green-chilli-576.jpg"
-}
-
-];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 const cartItems =
 document.getElementById("cartItems");
