@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kisan Market Checkout</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="checkout.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar d-flex justify-content-between">
+
+    <div class="navbar-brand">
+        🛒 Kisan Market
+    </div>
+
+    <div class="cart-count" id="cartCount">
+        0 Items
+    </div>
+
+</nav>
+
+<!-- STEP BAR -->
+
+<div class="step-container">
+
+    <div class="step active" id="step1">
+        Cart
+    </div>
+
+    <div class="step" id="step2">
+        Shipping
+    </div>
+
+    <div class="step" id="step3">
+        Payment
+    </div>
+
+    <div class="step" id="step4">
+        Confirm
+    </div>
+
+</div>
+
+<div class="container mb-5">
+
+<div class="row g-4">
+
+<!-- LEFT SIDE -->
+
+<div class="col-lg-8">
+
+<div class="checkout-card">
+
+<!-- CART SECTION -->
+
+<div id="cartSection">
+
+<h3 class="mb-4">
+Cart Items
+</h3>
+
+<div id="cartItems"></div>
+
+<button class="main-btn"
+onclick="goShipping()">
+
+Proceed To Shipping
+
+</button>
+
+</div>
+
+<!-- SHIPPING -->
+
+<div id="shippingSection"
+style="display:none;">
+
+<h3 class="mb-4">
+Shipping Address
+</h3>
+
+<input type="text"
+class="form-control"
+placeholder="Full Name"
+id="name">
+
+<input type="text"
+class="form-control"
+placeholder="Phone Number"
+id="phone">
+
+<input type="text"
+class="form-control"
+placeholder="Address"
+id="address">
+
+<div class="row">
+
+<div class="col-md-6">
+
+<input type="text"
+class="form-control"
+placeholder="City"
+id="city">
+
+</div>
+
+<div class="col-md-6">
+
+<input type="text"
+class="form-control"
+placeholder="Pincode"
+id="pincode">
+
+</div>
+
+</div>
+
+<button class="main-btn"
+onclick="goPayment()">
+
+Continue To Payment
+
+</button>
+
+</div>
+
+<!-- PAYMENT -->
+
+<div id="paymentSection"
+style="display:none;">
+
+<h3 class="mb-4">
+Payment Method
+</h3>
+
+<select class="form-select mb-3"
+id="paymentMethod">
+
+<option>
+Cash On Delivery
+</option>
+
+<option>
+UPI
+</option>
+
+<option>
+Credit / Debit Card
+</option>
+
+</select>
+
+<button class="main-btn"
+onclick="placeOrder()">
+
+Place Order
+
+</button>
+
+</div>
+
+<!-- SUCCESS -->
+
+<div id="successSection"
+style="display:none;">
+
+<div class="success-box">
+
+<h1>
+✅ Order Placed
+</h1>
+
+<h4 class="mt-3"
+id="orderId">
+
+</h4>
+
+<p class="mt-3">
+Thank You For Shopping With Us
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- RIGHT SIDE -->
+
+<div class="col-lg-4">
+
+<div class="checkout-card">
+
+<h3 class="mb-4">
+Order Summary
+</h3>
+
+<div class="summary-row">
+
+<span>
+Subtotal
+</span>
+
+<span id="subtotal">
+₹0
+</span>
+
+</div>
+
+<div class="summary-row">
+
+<span>
+Shipping
+</span>
+
+<span>
+₹50
+</span>
+
+</div>
+
+<div class="summary-row">
+
+<span>
+Tax
+</span>
+
+<span id="tax">
+₹0
+</span>
+
+</div>
+
+<hr>
+
+<div class="summary-row total">
+
+<span>
+Total
+</span>
+
+<span id="total">
+₹0
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="checkout.js"></script>
+
+</body>
+</html>
