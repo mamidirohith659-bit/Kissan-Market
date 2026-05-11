@@ -14,7 +14,7 @@ function log() {
     window.location.href = "../Farmer/farmer.html";
   } 
   else if (email === "vendor@12" && password === "vendor123") {
-    window.location.href = "../vender/vender.html";
+    window.location.href = "../vendor/vendor.html";
   }
   else {
     alert("Invalid Email or Password");
