@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Products - Kissan Market</title>
+    <link rel="stylesheet" href="../../../../css/style.css">
+    <link rel="stylesheet" href="../../../../css/farmer.css">
+    <script src="../../js/chat.js" defer></script>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #f0f0f0;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+        .product-img {
+            height: 160px;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .product-body {
+            padding: 1rem;
+        }
+        .product-badge {
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            background: #f5f5f5;
+            color: #666;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        @keyframes subtleFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: subtleFade 0.3s ease-out;
+        }
+        @media (max-width: 600px) {
+            .modal-content {
+                padding: 1.5rem;
+                border-radius: 0;
+                height: 100%;
+                max-width: 100%;
+                overflow-y: auto;
+            }
+            .form-row {
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+            .header {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar" id="sidebar">
+            <a href="dashboard.html" class="sidebar-logo"><span>👨‍🌾 Kissan Market</span></a>
+            <ul class="sidebar-menu">
+                <li class="menu-item"><a href="dashboard.html" class="menu-link"><i>📊</i> Dashboard</a></li>
+                <li class="menu-item"><a href="products.html" class="menu-link active"><i>🥦</i> My Products</a></li>
+                <li class="menu-item"><a href="bids.html" class="menu-link"><i>⚖️</i> Live Bids</a></li>
+                <li class="menu-item"><a href="analytics.html" class="menu-link"><i>📈</i> Analytics</a></li>
+                <li class="menu-item"><a href="profile.html" class="menu-link"><i>👤</i> My Profile</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="State.logout()"><i>🚪</i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left"><h2>My Products</h2></div>
+                <div class="header-right">
+                    <button class="btn btn-primary" onclick="toggleModal(true)">+ Add New Product</button>
+                    <div class="user-profile">
+                        <div class="avatar">F</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container fade-in">
+                <div id="product-list" class="product-grid">
+                    <!-- Products will be injected here -->
+                </div>
+                
+                <!-- Empty State -->
+                <div id="empty-state" style="text-align: center; padding: 4rem; display: none;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🧺</div>
+                    <h3>No products listed yet</h3>
+                    <p style="color: var(--text-muted);">Start by adding your first vegetable or fruit to the market.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content fade-in">
+            <h3 style="margin-bottom: 1.5rem;" id="modal-title">Add New Product</h3>
+            <form id="product-form">
+                <input type="hidden" id="p-id">
+                <div class="form-group">
+                    <label>Vegetable / Fruit Name</label>
+                    <input type="text" id="p-name" placeholder="e.g. Tomatoes" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="p-category" style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ddd;">
+                        <option value="Vegetables">Vegetables</option>
+                        <option value="Fruits">Fruits</option>
+                        <option value="Grains">Grains</option>
+                        <option value="Spices">Spices</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Image / Icon</label>
+                    <select id="p-image" style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ddd;">
+                        <option value="🍅">🍅 Tomato</option>
+                        <option value="🥦">🥦 Broccoli</option>
+                        <option value="🌾">🌾 Rice</option>
+                        <option value="🥭">🥭 Mango</option>
+                        <option value="🧅">🧅 Onion</option>
+                        <option value="🥔">🥔 Potato</option>
+                        <option value="🥕">🥕 Carrot</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="p-desc" placeholder="Describe your product..." style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ddd; height: 80px;"></textarea>
+                </div>
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="p-qty" placeholder="500" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit</label>
+                        <select id="p-unit" style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ddd;">
+                            <option value="kg">kg</option>
+                            <option value="Quintal">Quintal</option>
+                            <option value="Ton">Ton</option>
+                            <option value="Dozen">Dozen</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group" style="position: relative;">
+                        <label>Min Price (₹)</label>
+                        <input type="number" id="p-price" placeholder="2000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Price (₹)</label>
+                        <input type="number" id="p-max-price" placeholder="5000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="p-location" placeholder="e.g. Nashik, MH" required>
+                    </div>
+                </div>
+                <div style="margin-top: -0.5rem; margin-bottom: 1rem;">
+                    <button type="button" onclick="suggestPrice()" style="background: none; border: none; color: var(--accent-green); font-size: 0.7rem; cursor: pointer; font-weight: 700;">✨ AI Suggest Range</button>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label>Bidding End Time</label>
+                    <input type="datetime-local" id="p-date" required style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ddd;">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" onclick="toggleModal(false)">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Publish Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../../../js/app.js"></script>
+    <script src="../../../../js/farmer.js"></script>
+    <script>
+        function renderProducts() {
+            const user = State.getCurrentUser();
+            const products = State.getProducts().filter(p => p.farmerId === user.id);
+            const list = document.getElementById('product-list');
+            const empty = document.getElementById('empty-state');
+
+            if (products.length === 0) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            list.innerHTML = products.map(p => {
+                const highestBid = State.getHighestBid(p.id);
+                const timeLeft = UI.formatTimeLeft(p.endTime);
+                const statusColor = p.status === 'Active' ? 'var(--accent-green)' : (p.status === 'Sold' ? '#1976d2' : '#d32f2f');
+                
+                return `
+                <div class="product-card fade-in">
+                    <div class="product-img">${p.image && p.image.startsWith('http') ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : p.image || '🥦'}</div>
+                    <div class="product-body">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <span class="product-badge" style="background: ${statusColor}10; color: ${statusColor}; border: 1px solid ${statusColor}20;">${p.status}</span>
+                            <span style="font-size: 0.7rem; color: #999; font-weight: 500;">⌛ ${timeLeft}</span>
+                        </div>
+                        
+                        <h4 style="margin: 0 0 0.2rem 0; font-size: 1.1rem; color: #333;">${p.name}</h4>
+                        <p style="font-size: 0.75rem; color: #777; margin-bottom: 1rem;">📍 ${p.location || 'Maharashtra, IN'}</p>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-top: 1px solid #f9f9f9;">
+                            <div>
+                                <p style="font-size: 0.65rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Target Range</p>
+                                <p style="font-weight: 600; font-size: 0.85rem; color: #444;">₹${p.minPrice} - ${p.maxPrice || p.minPrice + 500}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: 0.65rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Highest Bid</p>
+                                <p style="font-weight: 700; color: var(--primary-color); font-size: 1rem;">₹${highestBid ? highestBid.amount : '--'}</p>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="btn btn-outline" style="padding: 0.5rem; font-size: 0.75rem; border-radius: 8px;" onclick="promptStockUpdate(${p.id}, '${p.name}', '${p.quantity}')">Stock</button>
+                            <button class="btn btn-outline" style="padding: 0.5rem; font-size: 0.75rem; border-radius: 8px;" onclick="editProduct(${p.id})">Edit</button>
+                        </div>
+                        
+                        <a href="bids.html?id=${p.id}" class="btn btn-primary" style="padding: 0.6rem; font-size: 0.8rem; width: 100%; margin-top: 0.5rem; border-radius: 8px; text-align: center; text-decoration: none; display: block;">View Bids</a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function promptStockUpdate(id, name, current) {
+            const newStock = prompt(`Update stock for ${name}:`, current);
+            if (newStock !== null) {
+                State.updateStock(id, newStock);
+                UI.showToast('Stock updated!');
+                renderProducts();
+            }
+        }
+
+        document.getElementById('product-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = State.getCurrentUser();
+            const productId = document.getElementById('p-id').value;
+            
+            const productData = {
+                name: document.getElementById('p-name').value,
+                category: document.getElementById('p-category').value,
+                image: document.getElementById('p-image').value,
+                description: document.getElementById('p-desc').value,
+                quantity: document.getElementById('p-qty').value,
+                unit: document.getElementById('p-unit').value,
+                location: document.getElementById('p-location').value,
+                minPrice: parseInt(document.getElementById('p-price').value),
+                maxPrice: parseInt(document.getElementById('p-max-price').value),
+                endTime: new Date(document.getElementById('p-date').value).toISOString(),
+                farmerId: user.id,
+                farmerName: user.name
+            };
+
+            if (productId) {
+                State.updateProduct(parseInt(productId), productData);
+                UI.showToast('Product updated successfully!');
+            } else {
+                State.addProduct(productData);
+                UI.showToast('Product listed successfully!');
+            }
+            
+            toggleModal(false);
+            e.target.reset();
+            document.getElementById('p-id').value = '';
+            renderProducts();
+        });
+
+        function editProduct(id) {
+            const product = State.getProducts().find(p => p.id === id);
+            if (!product) return;
+
+            document.getElementById('modal-title').innerText = 'Edit Product';
+            document.getElementById('p-id').value = product.id;
+            document.getElementById('p-name').value = product.name;
+            document.getElementById('p-category').value = product.category;
+            document.getElementById('p-image').value = product.image || '🥦';
+            document.getElementById('p-desc').value = product.description || '';
+            document.getElementById('p-qty').value = product.quantity;
+            document.getElementById('p-unit').value = product.unit || 'kg';
+            document.getElementById('p-location').value = product.location || '';
+            document.getElementById('p-price').value = product.minPrice;
+            document.getElementById('p-max-price').value = product.maxPrice || product.minPrice + 1000;
+            document.getElementById('p-date').value = new Date(product.endTime).toISOString().slice(0, 16);
+
+            toggleModal(true);
+        }
+
+        function toggleModal(show) {
+            document.getElementById('product-modal').classList.toggle('active', show);
+            if (show && !document.getElementById('p-id').value) {
+                document.getElementById('modal-title').innerText = 'Add New Product';
+                // Set default end time to 24h from now
+                const now = new Date();
+                now.setHours(now.getHours() + 24);
+                document.getElementById('p-date').value = now.toISOString().slice(0, 16);
+            }
+            if (!show) {
+                document.getElementById('p-id').value = '';
+            }
+        }
+
+        function suggestPrice() {
+            const name = document.getElementById('p-name').value.toLowerCase();
+            const suggestions = {
+                'tomato': {min: 2200, max: 3500}, 
+                'onion': {min: 1800, max: 2800}, 
+                'potato': {min: 1500, max: 2200}, 
+                'carrot': {min: 3000, max: 4500}, 
+                'mango': {min: 12000, max: 18000}, 
+                'rice': {min: 55000, max: 75000}
+            };
+            const range = suggestions[name] || {min: 2500, max: 4000};
+            document.getElementById('p-price').value = range.min;
+            document.getElementById('p-max-price').value = range.max;
+            UI.showToast(`AI Suggests ₹${range.min} - ₹${range.max} based on market demand!`);
+        }
+
+        // Listen for real-time changes
+        State.listenToChanges(renderProducts);
+
+        // Update timers every second
+        setInterval(renderProducts, 1000);
+
+        document.addEventListener('DOMContentLoaded', renderProducts);
+    </script>
+
+</body>
+</html>

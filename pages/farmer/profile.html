@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Kissan Market</title>
+    <link rel="stylesheet" href="../../../../css/style.css">
+    <link rel="stylesheet" href="../../../../css/farmer.css">
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+        .profile-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+        .profile-image-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+        }
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-light);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .stat-card {
+            background: #fdf8f5;
+            padding: 1.2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #f3e5dc;
+        }
+        .stat-card h4 { font-size: 1.5rem; color: var(--primary-color); margin-bottom: 5px; }
+        .stat-card p { font-size: 0.8rem; color: #777; font-weight: 600; text-transform: uppercase; }
+
+        .profile-details {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+        .detail-group { margin-bottom: 1.5rem; }
+        .detail-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; }
+        .detail-group p { font-size: 1.1rem; font-weight: 500; color: #333; }
+        .detail-group input { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+
+        .recent-orders {
+            margin-top: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .order-row:last-child { border-bottom: none; }
+
+        @media (max-width: 900px) {
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="dashboard.html" class="sidebar-logo"><span>👨‍🌾 Kissan Market</span></a>
+            <ul class="sidebar-menu">
+                <li class="menu-item"><a href="dashboard.html" class="menu-link"><i>📊</i> Dashboard</a></li>
+                <li class="menu-item"><a href="products.html" class="menu-link"><i>🥦</i> My Products</a></li>
+                <li class="menu-item"><a href="bids.html" class="menu-link"><i>⚖️</i> Live Bids</a></li>
+                <li class="menu-item"><a href="notifications.html" class="menu-link"><i>🔔</i> Notifications</a></li>
+                <li class="menu-item"><a href="profile.html" class="menu-link active"><i>👤</i> My Profile</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="State.logout()"><i>🚪</i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left"><h2>Farmer Profile</h2></div>
+                <div class="header-right">
+                    <div class="user-profile"><div class="avatar" id="nav-avatar">F</div></div>
+                </div>
+            </header>
+
+            <div class="container fade-in">
+                <div class="profile-container">
+                    <div class="profile-grid">
+                        <!-- Left: Overview & Stats -->
+                        <div>
+                            <div class="profile-header">
+                                <div class="profile-image-wrapper">
+                                    <img src="" alt="Profile" class="profile-image" id="profile-img">
+                                    <button class="edit-img-btn" onclick="document.getElementById('img-upload').click()">📷</button>
+                                    <input type="file" id="img-upload" style="display: none;" accept="image/*" onchange="handleImageUpload(event)">
+                                </div>
+                                <h2 id="profile-name-display">Farmer Name</h2>
+                                <p style="color: var(--primary-color); font-weight: 700; margin-top: 5px;">Active Farmer</p>
+                                
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <h4 id="stat-sold">0</h4>
+                                        <p>Sold</p>
+                                    </div>
+                                    <div class="stat-card">
+                                        <h4 id="stat-revenue">₹0</h4>
+                                        <p>Revenue</p>
+                                    </div>
+                                    <div class="stat-card">
+                                        <h4 id="stat-bids">0</h4>
+                                        <p>Active Bids</p>
+                                    </div>
+                                    <div class="stat-card">
+                                        <h4 id="stat-monthly">0</h4>
+                                        <p>Monthly</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recent-orders">
+                                <h3 style="margin-bottom: 1.5rem; font-size: 1.1rem;">Recent Orders</h3>
+                                <div id="orders-list">
+                                    <p style="color: #aaa; text-align: center; padding: 1rem;">No orders yet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Details & Editing -->
+                        <div class="profile-details" id="profile-form">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3 style="font-size: 1.3rem;">Personal Details</h3>
+                                <button class="btn btn-outline" id="edit-btn" onclick="toggleEdit(true)"><i>✏️</i> Edit Profile</button>
+                            </div>
+                            
+                            <div class="detail-group">
+                                <label>Full Name</label>
+                                <p id="view-name">Farmer Name</p>
+                                <input type="text" id="edit-name" style="display: none;">
+                            </div>
+                            <div class="detail-group">
+                                <label>Email Address</label>
+                                <p id="view-email">farmer@example.com</p>
+                                <input type="email" id="edit-email" style="display: none;">
+                            </div>
+                            <div class="detail-group">
+                                <label>Phone Number</label>
+                                <p id="view-phone">+91 98765 43210</p>
+                                <input type="text" id="edit-phone" style="display: none;">
+                            </div>
+                            <div class="detail-group">
+                                <label>Farm Location</label>
+                                <p id="view-location">Nashik, Maharashtra</p>
+                                <input type="text" id="edit-location" style="display: none;">
+                            </div>
+
+                            <div class="btn-group" id="edit-actions" style="display: none;">
+                                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+                                <button class="btn btn-outline" onclick="toggleEdit(false)">Cancel</button>
+                            </div>
+
+                            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Product Performance</h3>
+                                <div id="performance-chart" style="height: 100px; background: #f9f9f9; border-radius: 10px; display: flex; align-items: flex-end; gap: 10px; padding: 10px;">
+                                    <!-- Simple dummy bars -->
+                                    <div style="flex: 1; height: 40%; background: var(--primary-light); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 70%; background: var(--primary-light); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 50%; background: var(--primary-light); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 90%; background: var(--primary-color); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 60%; background: var(--primary-light); border-radius: 4px;"></div>
+                                </div>
+                                <p style="font-size: 0.75rem; color: #999; text-align: center; margin-top: 10px;">Sales performance over last 5 months</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../../../js/app.js"></script>
+    <script src="../../../../js/farmer.js"></script>
+    <script>
+        function loadProfile() {
+            const user = State.getCurrentUser();
+            if (!user || user.role !== 'farmer') { window.location.href = '../auth/login.html'; return; }
+
+            document.getElementById('nav-avatar').innerText = user.name[0].toUpperCase();
+            document.getElementById('profile-img').src = user.image || 'https://via.placeholder.com/150';
+            document.getElementById('profile-name-display').innerText = user.name;
+
+            document.getElementById('view-name').innerText = user.name;
+            document.getElementById('view-email').innerText = user.email;
+            document.getElementById('view-phone').innerText = user.phone;
+            document.getElementById('view-location').innerText = user.location;
+
+            // Stats
+            const stats = State.getFarmerStats(user.id);
+            document.getElementById('stat-sold').innerText = stats.totalSold;
+            document.getElementById('stat-revenue').innerText = `₹${stats.revenue.toLocaleString()}`;
+            document.getElementById('stat-bids').innerText = stats.activeBids;
+            document.getElementById('stat-monthly').innerText = stats.monthlySales;
+
+            // Orders
+            const accepted = State.getData(State.keys.accepted).filter(p => p.farmerId === user.id).slice(0, 5);
+            const orderList = document.getElementById('orders-list');
+            if (accepted.length > 0) {
+                orderList.innerHTML = accepted.map(o => `
+                    <div class="order-row">
+                        <div>
+                            <p style="font-weight: 600; font-size: 0.9rem;">${o.name}</p>
+                            <p style="font-size: 0.75rem; color: #999;">Sold to ${o.soldTo}</p>
+                        </div>
+                        <p style="font-weight: 700; color: #2e7d32;">₹${o.soldPrice}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleEdit(edit) {
+            const viewEls = ['view-name', 'view-email', 'view-phone', 'view-location', 'edit-btn'];
+            const editEls = ['edit-name', 'edit-email', 'edit-phone', 'edit-location', 'edit-actions'];
+
+            viewEls.forEach(id => document.getElementById(id).style.display = edit ? 'none' : 'block');
+            editEls.forEach(id => document.getElementById(id).style.display = edit ? 'block' : 'none');
+
+            if (edit) {
+                const user = State.getCurrentUser();
+                document.getElementById('edit-name').value = user.name;
+                document.getElementById('edit-email').value = user.email;
+                document.getElementById('edit-phone').value = user.phone;
+                document.getElementById('edit-location').value = user.location;
+            }
+        }
+
+        function saveProfile() {
+            const updatedData = {
+                name: document.getElementById('edit-name').value,
+                email: document.getElementById('edit-email').value,
+                phone: document.getElementById('edit-phone').value,
+                location: document.getElementById('edit-location').value
+            };
+            State.updateProfile(updatedData);
+            UI.showToast('Profile updated!', 'success');
+            toggleEdit(false);
+            loadProfile();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    State.updateProfile({ image: e.target.result });
+                    document.getElementById('profile-img').src = e.target.result;
+                    UI.showToast('Photo updated!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

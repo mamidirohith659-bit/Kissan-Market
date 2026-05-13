@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Kissan Market Command Center</title>
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b4a2b;
+            --primary-light: #fdf5f2;
+            --secondary: #2e7d32;
+            --secondary-light: #e8f5e9;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gray: #666;
+            --border: #eee;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --sidebar-width: 280px;
+            --danger: #d32f2f;
+            --warning: #fb8c00;
+            --info: #0288d1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background-color: #f4f7f6; color: var(--dark); overflow-x: hidden; }
+
+        /* LAYOUT */
+        .admin-layout { display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width); background: var(--white); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-header { padding: 2.5rem 2rem; border-bottom: 1px solid var(--border); }
+        .sidebar-header .logo { display: flex; align-items: center; gap: 12px; color: var(--primary); font-weight: 800; font-size: 1.4rem; }
+
+        .nav-menu { list-style: none; padding: 1.5rem 1.2rem; flex: 1; overflow-y: auto; }
+        .nav-item { margin-bottom: 0.8rem; }
+        .nav-link {
+            display: flex; align-items: center; gap: 15px; padding: 1rem 1.2rem;
+            text-decoration: none; color: var(--gray); font-weight: 600; border-radius: 14px;
+            transition: all 0.3s ease;
+        }
+        .nav-link i { font-size: 1.2rem; width: 24px; text-align: center; }
+        .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); transform: translateX(5px); }
+
+        /* MAIN PANEL */
+        .main-panel { flex: 1; margin-left: var(--sidebar-width); padding: 2.5rem; transition: margin 0.4s ease; }
+
+        /* TOPBAR */
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; background: var(--white); padding: 1rem 2rem; border-radius: 20px; box-shadow: var(--shadow); }
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--primary); }
+        .topbar-right { display: flex; align-items: center; gap: 2rem; }
+        .notif-btn { position: relative; cursor: pointer; color: var(--gray); font-size: 1.3rem; transition: color 0.3s; }
+        .notif-btn:hover { color: var(--primary); }
+        .notif-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
+
+        .user-meta { display: flex; align-items: center; gap: 15px; border-left: 1px solid var(--border); padding-left: 2rem; }
+        .avatar { width: 45px; height: 45px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(139, 74, 43, 0.3); }
+
+        /* DASHBOARD GRID */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-card { background: var(--white); padding: 2rem; border-radius: 24px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 0.8rem; position: relative; overflow: hidden; transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-8px); }
+        .stat-card i { position: absolute; right: -10px; bottom: -10px; font-size: 5rem; color: rgba(139, 74, 43, 0.05); }
+        .stat-card .label { color: var(--gray); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card .value { font-size: 2.2rem; font-weight: 800; color: var(--dark); }
+        .stat-card .trend { font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+        .trend-up { color: var(--secondary); }
+
+        /* SECTIONS */
+        .section { display: none; animation: fadeInScale 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .section.active { display: block; }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        /* TABLES & CARDS */
+        .glass-card { background: var(--white); border-radius: 24px; padding: 2rem; box-shadow: var(--shadow); margin-bottom: 2rem; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .search-wrapper { position: relative; flex: 0.4; min-width: 250px; }
+        .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #bbb; }
+        .search-input { width: 100%; padding: 0.8rem 1rem 0.8rem 2.8rem; border: 1.5px solid var(--border); border-radius: 14px; outline: none; transition: all 0.3s; }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+
+        .table-container { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { padding: 1.2rem; background: #fcfcfc; text-align: left; color: var(--gray); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border); }
+        td { padding: 1.2rem; border-bottom: 1px solid var(--border); font-size: 0.95rem; font-weight: 500; vertical-align: middle; }
+        tr:hover td { background: #fafafa; }
+
+        .badge { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: inline-block; }
+        .bg-active { background: #e8f5e9; color: #2e7d32; }
+        .bg-pending { background: #fff3e0; color: #ef6c00; }
+        .bg-blocked { background: #ffebee; color: #c62828; }
+
+        .btn { padding: 0.8rem 1.5rem; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+        .btn-p { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(139, 74, 43, 0.2); }
+        .btn-p:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 74, 43, 0.3); }
+        .btn-o { background: white; border: 1.5px solid var(--border); color: var(--gray); }
+        .btn-o:hover { border-color: var(--primary); color: var(--primary); }
+
+        .icon-btn { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .icon-btn:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.1); }
+
+        /* ANALYTICS */
+        .analytics-row { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 2rem; }
+        .chart-mock { height: 350px; display: flex; align-items: flex-end; gap: 20px; padding: 2rem 1rem; border-bottom: 2px solid var(--border); position: relative; }
+        .bar { flex: 1; background: var(--primary); border-radius: 8px 8px 0 0; position: relative; transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bar:hover { background: var(--secondary); }
+        .bar::before { content: attr(data-val); position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 0.8rem; opacity: 0; transition: opacity 0.3s; }
+        .bar:hover::before { opacity: 1; }
+        .bar::after { content: attr(data-label); position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 0.75rem; font-weight: 600; color: var(--gray); }
+
+        /* ALERTS */
+        .alert-card { padding: 1.2rem; border-radius: 16px; margin-bottom: 1rem; display: flex; align-items: center; gap: 15px; border: 1px solid transparent; }
+        .alert-warning { background: #fff8e1; border-color: #ffecb3; color: #827717; }
+        .alert-success { background: #e8f5e9; border-color: #c8e6c9; color: #1b5e20; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-panel { margin-left: 0; padding: 1.5rem; }
+            .menu-toggle { display: block; }
+            .analytics-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) { .dashboard-grid { grid-template-columns: 1fr; } .user-meta { display: none; } }
+    </style>
+</head>
+<body>
+
+    <div class="admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>ADMIN COMMAND</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" class="nav-link active" onclick="showSec('dashboard', this)"><i class="fa-solid fa-house-chimney-window"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showSec('farmers', this)"><i class="fa-solid fa-users-viewfinder"></i> Farmers Management</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showSec('vendors', this)"><i class="fa-solid fa-truck-ramp-box"></i> Vendor Hub</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showSec('buyers', this)"><i class="fa-solid fa-shopping-bag"></i> Buyers Registry</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showSec('products', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory Audit</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showSec('bids', this)"><i class="fa-solid fa-handshake-angle"></i> Global Bids</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showSec('orders', this)"><i class="fa-solid fa-file-contract"></i> Master Orders</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showSec('reports', this)"><i class="fa-solid fa-chart-line"></i> Market Intelligence</a></li>
+            </ul>
+            <div style="padding: 2rem;">
+                <button class="btn btn-o" style="width: 100%; color: var(--danger);" onclick="confirmLogOut()"><i class="fa-solid fa-power-off"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
+                <div style="font-weight: 700; color: var(--gray); font-size: 1.1rem;">Kissan Market Intelligence Dashboard</div>
+                <div class="topbar-right">
+                    <div class="notif-btn">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notif-badge">3</span>
+                    </div>
+                    <div class="user-meta">
+                        <div style="text-align: right;">
+                            <p style="font-weight: 700; font-size: 0.95rem;">Command Center</p>
+                            <p style="font-size: 0.75rem; color: var(--gray); font-weight: 600;">Super Administrator</p>
+                        </div>
+                        <div class="avatar">SA</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard" class="section active">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                        <span class="label">Total Farmers</span>
+                        <div class="value animated-num" data-target="2481">0</div>
+                        <span class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> 14.2% Growth</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-store"></i>
+                        <span class="label">Total Vendors</span>
+                        <div class="value animated-num" data-target="864">0</div>
+                        <span class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> 8.5% Growth</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-gavel"></i>
+                        <span class="label">Active Bids</span>
+                        <div class="value animated-num" data-target="152">0</div>
+                        <span class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> 24 Live</span>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                        <span class="label">Total Revenue</span>
+                        <div class="value">₹<span class="animated-num" data-target="924000">0</span></div>
+                        <span class="trend trend-up"><i class="fa-solid fa-arrow-up"></i> 11.2% Gain</span>
+                    </div>
+                </div>
+
+                <div class="analytics-row">
+                    <div class="glass-card">
+                        <div class="table-header">
+                            <h3>Revenue Overview (Projected vs Actual)</h3>
+                        </div>
+                        <div class="chart-mock" id="rev-chart">
+                            <div class="bar" style="height: 40%;" data-label="Jan" data-val="₹45k"></div>
+                            <div class="bar" style="height: 65%;" data-label="Feb" data-val="₹62k"></div>
+                            <div class="bar" style="height: 55%;" data-label="Mar" data-val="₹58k"></div>
+                            <div class="bar" style="height: 85%;" data-label="Apr" data-val="₹94k"></div>
+                            <div class="bar" style="height: 75%;" data-label="May" data-val="₹82k"></div>
+                            <div class="bar" style="height: 95%;" data-label="Jun" data-val="₹105k"></div>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Critical Market Alerts</h3>
+                        <div style="margin-top: 1.5rem;">
+                            <div class="alert-card alert-warning">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <div>
+                                    <p style="font-weight: 700; font-size: 0.85rem;">Low Stock: Organic Rice</p>
+                                    <p style="font-size: 0.75rem;">Inventory level dropped below 500kg in Haryana hub.</p>
+                                </div>
+                            </div>
+                            <div class="alert-card alert-success">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>
+                                    <p style="font-weight: 700; font-size: 0.85rem;">Vendor Approved</p>
+                                    <p style="font-size: 0.75rem;">'FreshFarm Traders' successfully verified.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="margin-top: 2rem;">
+                    <div class="table-header">
+                        <h3>Latest Global Transactions</h3>
+                        <button class="btn btn-p" onclick="showSec('bids')">Monitor Bids</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>TX ID</th><th>Product Category</th><th>Bidder Entity</th><th>Final Amount</th><th>Timestamp</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="dash-tx-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FARMERS SECTION -->
+            <section id="farmers" class="section">
+                <div class="glass-card">
+                    <div class="table-header">
+                        <h2>Farmer Network Management</h2>
+                        <button class="btn btn-p" onclick="alert('Farmer Registration Module Initialized')"><i class="fa-solid fa-plus"></i> Register New Farmer</button>
+                    </div>
+                    <div class="search-wrapper" style="margin-bottom: 2rem;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="search-input" placeholder="Query farmer database..." onkeyup="filterTable('farmers-table-body', this.value)">
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Farmer ID</th><th>Full Name</th><th>Hub Location</th><th>Primary Crop</th><th>Join Date</th><th>Account Status</th><th>Operations</th></tr>
+                            </thead>
+                            <tbody id="farmers-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VENDORS SECTION -->
+            <section id="vendors" class="section">
+                <div class="glass-card">
+                    <div class="table-header">
+                        <h2>Verified Vendor Hub</h2>
+                        <button class="btn btn-p"><i class="fa-solid fa-plus"></i> Onboard Vendor</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Vendor ID</th><th>Business Entity</th><th>Category</th><th>Annual Volume</th><th>Active Bids</th><th>Security Status</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="vendors-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BIDS SECTION -->
+            <section id="bids" class="section">
+                <div class="glass-card">
+                    <div class="table-header">
+                        <h2>Market Bid Monitoring</h2>
+                        <div class="search-wrapper">
+                            <i class="fa-solid fa-filter"></i>
+                            <input type="text" class="search-input" placeholder="Filter by product..." onkeyup="filterTable('bids-table-body', this.value)">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Bid Reference</th><th>Commodity</th><th>Highest Bid</th><th>Current Leader</th><th>Auction Time</th><th>Moderation</th></tr>
+                            </thead>
+                            <tbody id="bids-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRODUCTS SECTION -->
+            <section id="products" class="section">
+                <div class="glass-card">
+                    <div class="table-header">
+                        <h2>Market Inventory Audit</h2>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>PID</th><th>Commodity Name</th><th>Classification</th><th>Origin Farm</th><th>Current Stock</th><th>Base Valuation</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="products-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OTHER SECTIONS -->
+            <section id="buyers" class="section">
+                <div class="glass-card">
+                    <h2>Buyer Relationship Registry</h2>
+                    <p style="color: #888; padding: 3rem; text-align: center;">Customer transaction historical data and engagement metrics are archived here.</p>
+                </div>
+            </section>
+            <section id="orders" class="section">
+                <div class="glass-card">
+                    <h2>Master Order Tracking</h2>
+                    <p style="color: #888; padding: 3rem; text-align: center;">Consolidated logistics and order fulfillment tracking system.</p>
+                </div>
+            </section>
+            <section id="reports" class="section">
+                <div class="glass-card">
+                    <h2>Market Intelligence Analytics</h2>
+                    <p style="color: #888; padding: 3rem; text-align: center;">Advanced economic reports and regional market performance analytics.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../../js/app.js"></script>
+    <script>
+        // PROFESSIONAL DATASET
+        const MARKET_DATA = {
+            farmers: [
+                { id: 'F-8801', name: 'Arjun Mehra', hub: 'Nashik, MH', crop: 'Organic Tomatoes', date: 'Jan 2024', status: 'active' },
+                { id: 'F-8802', name: 'Balvinder Singh', hub: 'Ambala, HR', crop: 'Basmati Rice', date: 'Feb 2024', status: 'active' },
+                { id: 'F-8803', name: 'Lakshmi Narayan', hub: 'Guntur, AP', crop: 'Red Chillies', date: 'Mar 2024', status: 'pending' },
+                { id: 'F-8804', name: 'Somnath Patil', hub: 'Ratnagiri, MH', crop: 'Alphonso Mango', date: 'Mar 2024', status: 'blocked' },
+                { id: 'F-8805', name: 'Gurpreet Kaur', hub: 'Jalandhar, PB', crop: 'Golden Wheat', date: 'Apr 2024', status: 'active' }
+            ],
+            vendors: [
+                { id: 'V-2021', business: 'Global Agri Exports', type: 'Wholesaler', vol: '₹85.4L', bids: 142, status: 'approved' },
+                { id: 'V-2022', business: 'FreshGro Retail Chain', type: 'Retailer', vol: '₹22.1L', bids: 64, status: 'approved' },
+                { id: 'V-2023', business: 'Kisan Dost Traders', type: 'Distributor', vol: '₹12.5L', bids: 18, status: 'pending' },
+                { id: 'V-2024', business: 'Indo-Farm Exporters', type: 'Exporter', vol: '₹145.0L', bids: 256, status: 'approved' }
+            ]
+        };
+
+        // UI CORE
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+
+        function showSec(id, el) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            el.classList.add('active');
+            if (id === 'dashboard') initDashboard();
+            else loadSectionData(id);
+            if (window.innerWidth <= 1024) toggleSidebar();
+        }
+
+        function initDashboard() {
+            animateStats();
+            renderDashBids();
+        }
+
+        function animateStats() {
+            document.querySelectorAll('.animated-num').forEach(el => {
+                const target = +el.dataset.target;
+                const count = +el.innerText.replace(/,/g, '');
+                if (count < target) {
+                    const inc = Math.ceil(target / 30);
+                    el.innerText = (count + inc > target ? target : count + inc).toLocaleString();
+                    setTimeout(() => animateStats(), 20);
+                }
+            });
+        }
+
+        function renderDashBids() {
+            const tbody = document.getElementById('dash-tx-table');
+            const bids = State.getBids().slice(0, 5);
+            tbody.innerHTML = bids.map(b => `
+                <tr>
+                    <td>#TX-${b.id}</td>
+                    <td>${b.productName}</td>
+                    <td>${b.vendorName}</td>
+                    <td><strong>₹${b.amount.toLocaleString()}</strong></td>
+                    <td>Today, 10:45 AM</td>
+                    <td><span class="badge bg-${b.status}">${b.status}</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="6" style="text-align:center;">No active transactions found.</td></tr>';
+        }
+
+        // SECTION DATA RENDERERS
+        function loadSectionData(sec) {
+            if (sec === 'farmers') renderFarmers();
+            if (sec === 'vendors') renderVendors();
+            if (sec === 'products') renderInventory();
+            if (sec === 'bids') renderFullBids();
+        }
+
+        function renderFarmers() {
+            document.getElementById('farmers-table-body').innerHTML = MARKET_DATA.farmers.map(f => `
+                <tr>
+                    <td>#${f.id}</td>
+                    <td><strong>${f.name}</strong></td>
+                    <td>${f.hub}</td>
+                    <td>${f.crop}</td>
+                    <td>${f.date}</td>
+                    <td><span class="badge bg-${f.status}">${f.status}</span></td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <button class="icon-btn" onclick="UI.showToast('Accessing Profile: ${f.name}', 'info')"><i class="fa-solid fa-eye"></i></button>
+                            <button class="icon-btn" onclick="toggleFStatus('${f.id}')" style="color:red;"><i class="fa-solid fa-ban"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderVendors() {
+            document.getElementById('vendors-table-body').innerHTML = MARKET_DATA.vendors.map(v => `
+                <tr>
+                    <td>#${v.id}</td>
+                    <td><strong>${v.business}</strong></td>
+                    <td>${v.type}</td>
+                    <td>${v.vol}</td>
+                    <td>${v.bids} Bids</td>
+                    <td><span class="badge bg-${v.status === 'approved' ? 'active' : 'pending'}">${v.status}</span></td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <button class="icon-btn" style="color:green;" onclick="alert('Vendor Approved')"><i class="fa-solid fa-check"></i></button>
+                            <button class="icon-btn" style="color:red;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderInventory() {
+            const products = State.getProducts();
+            document.getElementById('products-table-body').innerHTML = products.map(p => `
+                <tr>
+                    <td>#${p.id}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category}</td>
+                    <td>${p.farmerName}</td>
+                    <td>${p.quantity} ${p.unit}</td>
+                    <td>₹${p.minPrice}</td>
+                    <td>
+                        <button class="icon-btn" style="color:red;" onclick="confirmAction('Remove Product', () => { State.deleteProduct(${p.id}); renderInventory(); })"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderFullBids() {
+            const bids = State.getBids();
+            document.getElementById('bids-table-body').innerHTML = bids.map(b => `
+                <tr>
+                    <td>#BID-${b.id}</td>
+                    <td><strong>${b.productName}</strong></td>
+                    <td>₹${b.amount.toLocaleString()}</td>
+                    <td>${b.vendorName}</td>
+                    <td>14:02 Left</td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-o" style="padding:5px 10px; font-size:0.7rem;" onclick="State.acceptBid(${b.id}); renderFullBids();">Approve</button>
+                            <button class="btn btn-o" style="padding:5px 10px; font-size:0.7rem; color:red;" onclick="State.rejectBid(${b.id}); renderFullBids();">Cancel</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // UTILITIES
+        function confirmAction(t, cb) { if(confirm(`System Authorization Required: ${t}?`)) cb(); }
+        function confirmLogOut() { if(confirm('Are you sure you want to exit the Admin Command Center?')) State.logout(); }
+        
+        function filterTable(tbodyId, q) {
+            const rows = document.getElementById(tbodyId).querySelectorAll('tr');
+            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none');
+        }
+
+        function toggleFStatus(id) {
+            const f = MARKET_DATA.farmers.find(x => x.id === id);
+            f.status = f.status === 'active' ? 'blocked' : 'active';
+            renderFarmers();
+            UI.showToast(`Farmer status updated to ${f.status}`, 'warning');
+        }
+
+        // INITIALIZE
+        document.addEventListener('DOMContentLoaded', () => initDashboard());
+    </script>
+</body>
+</html>

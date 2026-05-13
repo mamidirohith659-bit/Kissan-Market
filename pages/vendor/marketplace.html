@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - Kissan Market</title>
+    <link rel="stylesheet" href="../../../../css/style.css">
+    <link rel="stylesheet" href="../../../../css/vendor.css">
+    <script src="../../js/chat.js" defer></script>
+    <style>
+        .search-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .search-bar input {
+            flex-grow: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+        }
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .bid-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .bid-modal.active { display: flex; }
+        .bid-modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            .search-bar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .search-bar input, .search-bar select, .search-bar button {
+                width: 100%;
+            }
+            .bid-modal-content {
+                padding: 1.5rem;
+                border-radius: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="sidebar-logo"><span>🚚 Kissan Market</span></a>
+            <ul class="sidebar-menu">
+                <li class="menu-item"><a href="dashboard.html" class="menu-link"><i>📊</i> Dashboard</a></li>
+                <li class="menu-item"><a href="marketplace.html" class="menu-link active"><i>🛒</i> Marketplace</a></li>
+                <li class="menu-item"><a href="my-bids.html" class="menu-link"><i>⚖️</i> My Bids</a></li>
+                <li class="menu-item"><a href="orders.html" class="menu-link"><i>📦</i> Buyer Orders</a></li>
+                <li class="menu-item"><a href="notifications.html" class="menu-link"><i>🔔</i> Notifications</a></li>
+                <li class="menu-item"><a href="profile.html" class="menu-link"><i>👤</i> My Profile</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="State.logout()"><i>🚪</i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left"><h2>Marketplace</h2></div>
+                <div class="header-right">
+                    <div class="user-profile"><div class="avatar">V</div></div>
+                </div>
+            </header>
+
+            <div class="container fade-in">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search vegetables, fruits or farmers...">
+                    <button class="btn btn-primary">Search</button>
+                    <select class="btn btn-outline" style="padding: 0.7rem;">
+                        <option>All Types</option>
+                        <option>Vegetables</option>
+                        <option>Fruits</option>
+                    </select>
+                </div>
+
+                <div id="marketplace-list" class="marketplace-grid">
+                    <!-- Products injected here -->
+                </div>
+
+                <div id="empty-market" style="text-align: center; padding: 4rem; display: none;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+                    <h3>No products available</h3>
+                    <p style="color: var(--text-muted);">Check back later for new arrivals from farmers.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bid Modal -->
+    <div class="bid-modal" id="bid-modal">
+        <div class="card" style="width: 100%; max-width: 400px; padding: 2.5rem;">
+            <h3>Place Your Bid</h3>
+            <p id="bid-product-info" style="margin-bottom: 1.5rem; color: var(--text-muted);"></p>
+            <form id="bid-form">
+                <input type="hidden" id="bid-product-id">
+                <input type="hidden" id="bid-farmer-id">
+                <input type="hidden" id="bid-farmer-name">
+                <input type="hidden" id="bid-product-name">
+                <div class="form-group">
+                    <label>Your Bid Amount (₹)</label>
+                    <input type="number" id="bid-amount" required style="width: 100%; padding: 0.8rem; margin-top: 0.5rem; border: 1px solid #ddd; border-radius: 10px;">
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" onclick="closeBidModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Bid</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../../../js/app.js"></script>
+    <script src="../../../../js/vendor.js"></script>
+    <script>
+        function openBidModal(id, farmerId, farmerName, name, minPrice) {
+            const product = State.getProducts().find(p => p.id === id);
+            if (product.status !== 'Active') {
+                UI.showToast('Bidding is no longer active for this product', 'error');
+                return;
+            }
+
+            const highestBid = State.getHighestBid(id);
+            const user = State.getCurrentUser();
+            
+            document.getElementById('bid-product-id').value = id;
+            document.getElementById('bid-farmer-id').value = farmerId;
+            document.getElementById('bid-farmer-name').value = farmerName;
+            document.getElementById('bid-product-name').value = name;
+            
+            const currentHighest = highestBid ? highestBid.amount : minPrice;
+            document.getElementById('bid-product-info').innerHTML = `
+                Bidding for <strong>${name}</strong><br>
+                Minimum price: ₹${minPrice}<br>
+                Current highest bid: <strong>₹${currentHighest}</strong>
+            `;
+            
+            document.getElementById('bid-amount').min = currentHighest + 1;
+            document.getElementById('bid-amount').value = currentHighest + 100;
+            document.getElementById('bid-modal').classList.add('active');
+        }
+
+        function closeBidModal() {
+            document.getElementById('bid-modal').classList.remove('active');
+        }
+
+        function toggleInterested(productId) {
+            const added = State.addToInterested(productId);
+            if (added) {
+                UI.showToast('Added to Interested List', 'success');
+            } else {
+                let interested = State.getInterested();
+                interested = interested.filter(id => id !== productId);
+                State.saveData(State.keys.interested, interested);
+                UI.showToast('Removed from Interested List', 'success');
+            }
+            renderMarketplace(searchInput.value, categorySelect.value);
+        }
+
+        function renderMarketplace(searchQuery = '', categoryFilter = 'All Types') {
+            let products = State.getProducts();
+            const list = document.getElementById('marketplace-list');
+            const empty = document.getElementById('empty-market');
+            const user = State.getCurrentUser();
+
+            products = products.filter(p => p.status === 'Active');
+
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                products = products.filter(p => 
+                    p.name.toLowerCase().includes(query) || 
+                    p.farmerName.toLowerCase().includes(query) ||
+                    (p.category && p.category.toLowerCase().includes(query))
+                );
+            }
+
+            if (categoryFilter !== 'All Types') {
+                products = products.filter(p => p.category === categoryFilter);
+            }
+
+            if (products.length === 0) {
+                empty.style.display = 'block';
+                list.innerHTML = '';
+                return;
+            }
+
+            empty.style.display = 'none';
+            list.innerHTML = products.map(p => {
+                const highestBid = State.getHighestBid(p.id);
+                const timeLeft = UI.formatTimeLeft(p.endTime);
+                const isInterested = State.getInterested().includes(p.id);
+                const myBid = State.getBids().find(b => b.productId === p.id && b.vendorId === user.id);
+                
+                let bidStatusBadge = '';
+                if (myBid) {
+                    const isWinning = highestBid && highestBid.vendorId === user.id;
+                    bidStatusBadge = isWinning 
+                        ? '<span class="product-badge" style="background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d3244;">🏆 Winning</span>'
+                        : '<span class="product-badge" style="background: #fff3e0; color: #ef6c00; border: 1px solid #ef6c0044;">⚠️ Outbid</span>';
+                }
+
+                return `
+                    <div class="card fade-in" style="padding: 0; overflow: hidden; border: none; transition: 0.3s;">
+                        <div style="height: 180px; position: relative;">
+                            ${p.image.startsWith('http') ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="width:100%;height:100%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:3rem;">${p.image || '🥦'}</div>`}
+                            <div style="position: absolute; top: 10px; right: 10px;">
+                                <span class="product-badge" style="background: rgba(255,255,255,0.9); color: #333; backdrop-filter: blur(4px);">⌛ ${timeLeft}</span>
+                            </div>
+                            <button onclick="toggleInterested(${p.id})" style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: ${isInterested ? '#d32f2f' : '#ccc'}; font-size: 1.1rem; transition: 0.3s;">
+                                ${isInterested ? '❤️' : '🤍'}
+                            </button>
+                        </div>
+                        <div style="padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                <div>
+                                    <h4 style="margin: 0;">${p.name}</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.2rem 0;">👨‍🌾 ${p.farmerName}</p>
+                                </div>
+                                ${bidStatusBadge}
+                            </div>
+                            
+                            <p style="font-size: 0.85rem; color: #666; display: flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem;">📍 ${p.location}</p>
+                            
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem;">
+                                <span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; background: #f0f0f0; border-radius: 4px; color: #666;">${p.category}</span>
+                                <span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; background: #f0f0f0; border-radius: 4px; color: #666;">${p.quantity} ${p.unit}</span>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: var(--secondary-color); border-radius: 8px; margin-bottom: 1.2rem;">
+                                <div>
+                                    <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">CURRENT BID</p>
+                                    <p style="font-size: 1.1rem; font-weight: 800; color: var(--primary-color); margin: 0;">₹${highestBid ? highestBid.amount : p.minPrice}</p>
+                                </div>
+                                <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="UI.showToast('Product Details for ${p.name}', 'success')">Details</button>
+                            </div>
+
+                            <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.8rem;" onclick="openBidModal(${p.id}, ${p.farmerId}, '${p.farmerName}', '${p.name}', ${p.minPrice})">
+                                ${myBid ? 'Update Bid' : 'Place Bid'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        const searchInput = document.querySelector('.search-bar input');
+        const searchBtn = document.querySelector('.search-bar .btn-primary');
+        const categorySelect = document.querySelector('.search-bar select');
+
+        const performSearch = () => {
+            renderMarketplace(searchInput.value, categorySelect.value);
+        };
+
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+        categorySelect.addEventListener('change', performSearch);
+
+        document.getElementById('bid-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = State.getCurrentUser();
+            const amount = parseInt(document.getElementById('bid-amount').value);
+            const productId = parseInt(document.getElementById('bid-product-id').value);
+            
+            const highestBid = State.getHighestBid(productId);
+            
+            if (highestBid && amount <= highestBid.amount) {
+                UI.showToast(`Your bid must be higher than current highest (₹${highestBid.amount})`, 'error');
+                return;
+            }
+
+            const bid = {
+                productId: productId,
+                productName: document.getElementById('bid-product-name').value,
+                farmerId: parseInt(document.getElementById('bid-farmer-id').value),
+                farmerName: document.getElementById('bid-farmer-name').value,
+                vendorId: user.id,
+                vendorName: user.name,
+                amount: amount
+            };
+            
+            State.placeBid(bid);
+            closeBidModal();
+            UI.showToast(highestBid ? 'Bid updated successfully!' : 'Bid placed successfully!');
+            renderMarketplace(searchInput.value, categorySelect.value);
+        });
+
+        State.listenToChanges(performSearch);
+        setInterval(performSearch, 1000);
+        document.addEventListener('DOMContentLoaded', () => renderMarketplace());
+    </script>
+</body>
+</html>

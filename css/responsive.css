@@ -1,0 +1,116 @@
+/* Kissan Market - Global Responsive Design System */
+
+/* --- Mobile Navigation --- */
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 280px !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        height: 100vh !important;
+        z-index: 2000 !important;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-panel, .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .topbar, .header {
+        border-radius: 0 !important;
+        padding: 1rem !important;
+    }
+
+    .menu-toggle, .hamburger {
+        display: block !important;
+    }
+}
+
+/* --- Grid Adjustments --- */
+@media (max-width: 1200px) {
+    .dashboard-grid, .stat-grid, .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid, .stat-grid, .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .analytics-row, .grid-2, .grid-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem !important;
+    }
+
+    .section-header, .table-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .search-wrapper, .search-box {
+        width: 100% !important;
+        flex: 1 !important;
+    }
+}
+
+/* --- Table Responsiveness --- */
+.table-container, .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+table {
+    min-width: 800px; /* Force scroll on small screens */
+}
+
+/* --- Form Adjustments --- */
+@media (max-width: 480px) {
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal {
+        width: 95% !important;
+        padding: 1.5rem !important;
+    }
+
+    .avatar {
+        width: 35px;
+        height: 35px;
+    }
+
+    .user-meta, .user-info {
+        display: none;
+    }
+}
+
+/* --- Utilities --- */
+.fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Fix for overlapping elements */
+img {
+    max-width: 100%;
+    height: auto;
+}

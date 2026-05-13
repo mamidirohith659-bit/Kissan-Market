@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Analytics - Kissan Market</title>
+    <link rel="stylesheet" href="../../../../css/style.css">
+    <link rel="stylesheet" href="../../../../css/farmer.css">
+    <script src="../../js/chat.js" defer></script>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="sidebar-logo"><span>👨‍🌾 Kissan Market</span></a>
+            <ul class="sidebar-menu">
+                <li class="menu-item"><a href="dashboard.html" class="menu-link"><i>📊</i> Dashboard</a></li>
+                <li class="menu-item"><a href="products.html" class="menu-link"><i>🥦</i> My Products</a></li>
+                <li class="menu-item"><a href="bids.html" class="menu-link"><i>⚖️</i> Live Bids</a></li>
+                <li class="menu-item"><a href="analytics.html" class="menu-link active"><i>📈</i> Analytics</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="State.logout()"><i>🚪</i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left"><h2>Sales & Earnings Analytics</h2></div>
+                <div class="header-right"><div class="user-profile"><div class="avatar">F</div></div></div>
+            </header>
+
+            <div class="container fade-in">
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3>Monthly Earnings</h3>
+                        <div style="height: 250px; display: flex; align-items: flex-end; gap: 0.5rem; padding: 2rem 0;">
+                            <!-- Mock Earnings Chart -->
+                            <div style="flex: 1; background: var(--primary-light); height: 30%;" title="Jan"></div>
+                            <div style="flex: 1; background: var(--primary-color); height: 45%;" title="Feb"></div>
+                            <div style="flex: 1; background: var(--primary-light); height: 60%;" title="Mar"></div>
+                            <div style="flex: 1; background: var(--primary-color); height: 85%;" title="Apr"></div>
+                            <div style="flex: 1; background: var(--accent-green); height: 95%;" title="May"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+                            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Most Sold Vegetables</h3>
+                        <div style="margin-top: 1.5rem;">
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Tomatoes</span><span>45%</span></div>
+                                <div style="height: 10px; background: #eee; border-radius: 5px; overflow: hidden;"><div style="width: 45%; height: 100%; background: var(--primary-color);"></div></div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Onions</span><span>30%</span></div>
+                                <div style="height: 10px; background: #eee; border-radius: 5px; overflow: hidden;"><div style="width: 30%; height: 100%; background: var(--primary-light);"></div></div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Potatoes</span><span>25%</span></div>
+                                <div style="height: 10px; background: #eee; border-radius: 5px; overflow: hidden;"><div style="width: 25%; height: 100%; background: var(--accent-green);"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 2rem;">
+                    <h3>Vendor Insights</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Your most active buyers this month.</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="glass" style="padding: 1.5rem; border-radius: 15px; text-align: center;">
+                            <div class="avatar" style="margin: 0 auto 1rem;">V1</div>
+                            <p style="font-weight: 700;">Global Exports</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">12 Purchases</p>
+                        </div>
+                        <div class="glass" style="padding: 1.5rem; border-radius: 15px; text-align: center;">
+                            <div class="avatar" style="margin: 0 auto 1rem;">V2</div>
+                            <p style="font-weight: 700;">Organic Foods Ltd</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">8 Purchases</p>
+                        </div>
+                        <div class="glass" style="padding: 1.5rem; border-radius: 15px; text-align: center;">
+                            <div class="avatar" style="margin: 0 auto 1rem;">V3</div>
+                            <p style="font-weight: 700;">Fresh Mart</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">5 Purchases</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../../../js/app.js"></script>
+    <script src="../../../../js/farmer.js"></script>
+</body>
+</html>
