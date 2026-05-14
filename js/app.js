@@ -185,17 +185,32 @@ const State = {
         return { ...user, ...(profiles[user.id] || {}) };
     },
     logout() { 
-        localStorage.removeItem(this.keys.currentUser); 
-        const isSubPage = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/buyer/');
-        if (window.location.pathname.includes('/pages/')) {
-            window.location.href = '../../index.html';
-        } else if (window.location.pathname.includes('/buyer/')) {
-            // buyer pages are in /buyer/category/page.html or /buyer/home/index.html
-            // home is 2 levels deep, others are also 2 levels deep (e.g. /buyer/chat/index.html)
-            window.location.href = '../../index.html';
-        } else {
-            window.location.href = 'index.html';
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Find relative path to root index.html
+        const path = window.location.pathname;
+        let rootPath = './';
+        
+        // GitHub Pages friendly relative path calculation
+        // If we are in /pages/...
+        if (path.includes('/pages/')) {
+            const partsAfterPages = path.split('/pages/')[1].split('/').filter(p => p.length > 0);
+            // partsAfterPages might be ['admin', 'dashboard.html'] (length 2)
+            // we need to go up: dashboard.html (1) -> admin (2) -> pages (3) -> root
+            rootPath = '../'.repeat(partsAfterPages.length + 1);
+        } else if (path.includes('/buyer/')) {
+            const partsAfterBuyer = path.split('/buyer/')[1].split('/').filter(p => p.length > 0);
+            rootPath = '../'.repeat(partsAfterBuyer.length + 1);
+        } else if (path.includes('/farmer/')) {
+             const partsAfterFarmer = path.split('/farmer/')[1].split('/').filter(p => p.length > 0);
+             rootPath = '../'.repeat(partsAfterFarmer.length + 1);
+        } else if (path.includes('/vendor/')) {
+             const partsAfterVendor = path.split('/vendor/')[1].split('/').filter(p => p.length > 0);
+             rootPath = '../'.repeat(partsAfterVendor.length + 1);
         }
+        
+        window.location.href = rootPath + 'index.html';
     },
 
     updateProfile(profileData) {
@@ -363,6 +378,8 @@ const placeBid = (b) => State.placeBid(b);
 const acceptBid = (id) => State.acceptBid(id);
 const updateLocalStorage = (key, data) => State.saveData(key, data);
 const syncDashboards = () => State.syncDashboards();
+const logout = () => State.logout();
+window.logout = logout;
 
 State.init();
 

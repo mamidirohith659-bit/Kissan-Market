@@ -63,7 +63,7 @@ function renderCart() {
         total += item.price * item.qty;
         return `
             <div class="cart-item">
-                <img src="${item.image && item.image.startsWith('http') ? item.image : '../assets/images/placeholder.png'}">
+                <img src="${item.image && item.image.startswith("http') ? item.image : '../assets/images/placeholder.png'}">
                 <div style="flex: 1;">
                     <h4 style="font-size: 0.95rem; margin-bottom: 5px;">${item.name}</h4>
                     <p style="color: var(--primary-color); font-weight: 700;">₹${item.price}</p>
@@ -131,7 +131,7 @@ function renderMarketplace(products = State.getProducts()) {
 
     container.innerHTML = products.map(p => `
         <div class="card fade-in">
-            <img src="${p.image && p.image.startsWith('http') ? p.image : '../assets/images/placeholder.png'}" alt="${p.name}">
+            <img src="${p.image && p.image.startswith("http') ? p.image : '../assets/images/placeholder.png'}" alt="${p.name}">
             <div style="flex: 1;">
                 <p style="font-size: 0.75rem; color: #aaa; text-transform: uppercase;">${p.category}</p>
                 <h3>${p.name}</h3>
@@ -151,3 +151,4 @@ document.addEventListener('DOMContentLoaded', () => {
     renderMarketplace();
     updateCartCount();
 });
+
