@@ -14,7 +14,8 @@ const State = {
         currentUser: 'km_current_user',
         orders: 'km_orders',
         interested: 'km_interested_list',
-        buyer_orders: 'km_buyer_orders'
+        buyer_orders: 'km_buyer_orders',
+        cart: 'km_cart'
     },
 
     init() {
@@ -185,8 +186,16 @@ const State = {
     },
     logout() { 
         localStorage.removeItem(this.keys.currentUser); 
-        const isSubPage = window.location.pathname.includes('/pages/');
-        window.location.href = isSubPage ? '../../index.html' : 'index.html';
+        const isSubPage = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/buyer/');
+        if (window.location.pathname.includes('/pages/')) {
+            window.location.href = '../../index.html';
+        } else if (window.location.pathname.includes('/buyer/')) {
+            // buyer pages are in /buyer/category/page.html or /buyer/home/index.html
+            // home is 2 levels deep, others are also 2 levels deep (e.g. /buyer/chat/index.html)
+            window.location.href = '../../index.html';
+        } else {
+            window.location.href = 'index.html';
+        }
     },
 
     updateProfile(profileData) {

@@ -1,9 +1,31 @@
+// ================= SEARCH =================
+const searchInput = document.querySelector(".search input");
+const searchBtn = document.querySelector(".search button");
+
+if (searchBtn && searchInput) {
+  searchBtn.onclick = () => {
+    const query = searchInput.value.toLowerCase();
+    const cards = document.querySelectorAll(".product-grid .card");
+    
+    cards.forEach(card => {
+      const name = card.querySelector("h3").innerText.toLowerCase();
+      if (name.includes(query)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  };
+
+  searchInput.onkeyup = (e) => {
+    if (e.key === "Enter") searchBtn.onclick();
+  };
+}
+
 // ================= MENU =================
 function toggleMenu() {
   document.getElementById("navMenu").classList.toggle("show");
 }
-
-
 // ================= CART OPEN / CLOSE =================
 const cartDrawer = document.getElementById("cartDrawer");
 const overlay = document.getElementById("overlay");
@@ -53,7 +75,7 @@ function showToast(message) {
 
 
 // ================= CART DATA =================
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let cart = JSON.parse(localStorage.getItem("km_cart")) || [];
 
 
 // ================= ADD TO CART =================
@@ -79,7 +101,7 @@ document.querySelectorAll(".add-cart").forEach((btn) => {
       });
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("km_cart", JSON.stringify(cart));
 
     showToast("Product added to cart 🛒");
     loadCart();
@@ -112,7 +134,7 @@ document.querySelectorAll(".buy-now").forEach((btn) => {
       });
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("km_cart", JSON.stringify(cart));
     window.location.href = "../payment list/checkout.html";
   };
 });
@@ -189,7 +211,7 @@ function loadCart() {
 
 // ================= UPDATE CART =================
 function updateCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem("km_cart", JSON.stringify(cart));
   loadCart();
 }
 
@@ -265,7 +287,7 @@ loadCart();
 //       localStorage.setItem("buyNowItem", JSON.stringify(product));
 
 //       // redirect to payment page
-//       window.location.href = "payment.html";
+//       window.location.href = "../payment list/checkout.html";
 //     };
 //   });
 
@@ -382,7 +404,7 @@ loadCart();
 //     localStorage.setItem("buyNowItem", JSON.stringify(product));
 
 //     // redirect
-//     window.location.href = "payment.html";
+//     window.location.href = "../payment list/checkout.html";
 //   };
 // });
 
