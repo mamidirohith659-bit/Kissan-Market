@@ -121,10 +121,10 @@
 
             <div class="container fade-in">
                 <div id="product-list" class="product-grid">
-                    <!-- Products will be injected here -->
+                    
                 </div>
                 
-                <!-- Empty State -->
+            
                 <div id="empty-state" style="text-align: center; padding: 4rem; display: none;">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">🧺</div>
                     <h3>No products listed yet</h3>
@@ -134,7 +134,7 @@
         </main>
     </div>
 
-    <!-- Add Product Modal -->
+  
     <div class="modal" id="product-modal">
         <div class="modal-content fade-in">
             <h3 style="margin-bottom: 1.5rem;" id="modal-title">Add New Product</h3>
@@ -336,7 +336,7 @@
             document.getElementById('product-modal').classList.toggle('active', show);
             if (show && !document.getElementById('p-id').value) {
                 document.getElementById('modal-title').innerText = 'Add New Product';
-                // Set default end time to 24h from now
+                
                 const now = new Date();
                 now.setHours(now.getHours() + 24);
                 document.getElementById('p-date').value = now.toISOString().slice(0, 16);
@@ -362,10 +362,10 @@
             UI.showToast(`AI Suggests ₹${range.min} - ₹${range.max} based on market demand!`);
         }
 
-        // Listen for real-time changes
+    
         State.listenToChanges(renderProducts);
 
-        // Update timers every second
+      
 
         document.addEventListener('DOMContentLoaded', renderProducts);
     </script>

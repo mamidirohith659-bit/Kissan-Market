@@ -48,7 +48,7 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
+      
         <main class="main-content">
             <header class="header">
                 <div class="header-left"><h2>Vendor Profile</h2></div>
@@ -60,7 +60,7 @@
             <div class="container fade-in">
                 <div class="profile-container">
                     <div class="profile-grid">
-                        <!-- Left: Overview & Stats -->
+                     
                         <div>
                             <div class="profile-header">
                                 <div class="profile-image-wrapper">
@@ -99,7 +99,7 @@
                             </div>
                         </div>
 
-                        <!-- Right: Details & Editing -->
+                    
                         <div class="profile-details" id="profile-form">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                                 <h3 style="font-size: 1.3rem;">Company Information</h3>
@@ -174,14 +174,14 @@
             document.getElementById('view-phone').innerText = user.phone;
             document.getElementById('view-location').innerText = user.location;
 
-            // Stats
+         
             const stats = State.getVendorStats(user.id);
             document.getElementById('stat-purchases').innerText = `₹${stats.totalPurchases.toLocaleString()}`;
             document.getElementById('stat-bids').innerText = stats.activeBids;
             document.getElementById('stat-approved').innerText = stats.approvedBuyerOrders;
             document.getElementById('stat-active-orders').innerText = stats.activeBuyerOrders;
 
-            // Recent Purchases (Accepted bids/orders)
+            
             const myOrders = State.getOrders().filter(o => o.vendorId === user.id).slice(0, 5);
             const purchaseList = document.getElementById('purchases-list');
             if (myOrders.length > 0) {

@@ -59,7 +59,7 @@
                             </tr>
                         </thead>
                         <tbody id="bids-table-body">
-                            <!-- Bids injected here -->
+                           
                         </tbody>
                     </table>
                     <div id="empty-bids" style="text-align: center; padding: 4rem; display: none;">
@@ -147,7 +147,6 @@
             `}).join('');
         }
 
-        // Real-time updates
         State.listenToChanges(renderMyBids);
         document.addEventListener('DOMContentLoaded', renderMyBids);
     </script>

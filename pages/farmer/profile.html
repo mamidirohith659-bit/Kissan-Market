@@ -87,7 +87,7 @@
 <body>
 
     <div class="dashboard-layout">
-        <!-- Sidebar -->
+ 
         <aside class="sidebar">
             <a href="dashboard.html" class="sidebar-logo"><span>👨‍🌾 Kissan Market</span></a>
             <ul class="sidebar-menu">
@@ -114,7 +114,7 @@
             <div class="container fade-in">
                 <div class="profile-container">
                     <div class="profile-grid">
-                        <!-- Left: Overview & Stats -->
+                   
                         <div>
                             <div class="profile-header">
                                 <div class="profile-image-wrapper">
@@ -153,7 +153,7 @@
                             </div>
                         </div>
 
-                        <!-- Right: Details & Editing -->
+                        
                         <div class="profile-details" id="profile-form">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                                 <h3 style="font-size: 1.3rem;">Personal Details</h3>
@@ -189,7 +189,7 @@
                             <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
                                 <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Product Performance</h3>
                                 <div id="performance-chart" style="height: 100px; background: #f9f9f9; border-radius: 10px; display: flex; align-items: flex-end; gap: 10px; padding: 10px;">
-                                    <!-- Simple dummy bars -->
+                                
                                     <div style="flex: 1; height: 40%; background: var(--primary-light); border-radius: 4px;"></div>
                                     <div style="flex: 1; height: 70%; background: var(--primary-light); border-radius: 4px;"></div>
                                     <div style="flex: 1; height: 50%; background: var(--primary-light); border-radius: 4px;"></div>
@@ -221,14 +221,14 @@
             document.getElementById('view-phone').innerText = user.phone;
             document.getElementById('view-location').innerText = user.location;
 
-            // Stats
+            
             const stats = State.getFarmerStats(user.id);
             document.getElementById('stat-sold').innerText = stats.totalSold;
             document.getElementById('stat-revenue').innerText = `₹${stats.revenue.toLocaleString()}`;
             document.getElementById('stat-bids').innerText = stats.activeBids;
             document.getElementById('stat-monthly').innerText = stats.monthlySales;
 
-            // Orders
+         
             const accepted = State.getData(State.keys.accepted).filter(p => p.farmerId === user.id).slice(0, 5);
             const orderList = document.getElementById('orders-list');
             if (accepted.length > 0) {

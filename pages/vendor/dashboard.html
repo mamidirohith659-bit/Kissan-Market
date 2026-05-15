@@ -11,7 +11,7 @@
 <body>
 
     <div class="dashboard-layout">
-        <!-- Sidebar -->
+        
         <aside class="sidebar">
             <a href="dashboard.html" class="sidebar-logo">
                 <span>🚚 Kissan Market</span>
@@ -61,7 +61,7 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
+      
         <main class="main-content">
             <header class="header">
                 <div class="header-left">
@@ -116,7 +116,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
                 <div class="card" style="margin-bottom: 2rem;">
                     <h3 style="font-size: 1.1rem; margin-bottom: 1.2rem;">Quick Actions</h3>
                     <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
@@ -134,7 +133,7 @@
                             <a href="orders.html" style="color: var(--primary-color); font-size: 0.9rem; font-weight: 600;">View All</a>
                         </div>
                         <div id="buyer-orders-summary">
-                            <!-- Summary list injected here -->
+                        
                         </div>
                     </div>
 
@@ -170,7 +169,7 @@
             document.getElementById('user-display-name').innerText = user.name;
             document.getElementById('user-avatar').innerText = user.name[0].toUpperCase();
 
-            // Load Stats
+           
             const bids = State.getBids().filter(b => b.vendorId === user.id);
             const myOrders = State.getOrders().filter(o => o.vendorId === user.id);
             const buyerOrders = State.getBuyerOrders(user.id);
@@ -184,7 +183,6 @@
             document.getElementById('stat-pending-orders').innerText = pendingBuyerOrders.length;
             document.getElementById('stat-notifs').innerText = notifs.length;
 
-            // Render Buyer Orders Summary
             const orderList = document.getElementById('buyer-orders-summary');
             if (pendingBuyerOrders.length > 0) {
                 orderList.innerHTML = pendingBuyerOrders.slice(0, 3).map(o => `
@@ -198,7 +196,6 @@
                 orderList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No pending buyer orders.</p>';
             }
 
-            // Render Recommended (Dummy for now)
             const recList = document.getElementById('recommended-list');
             const products = State.getProducts().slice(0, 3);
             if (products.length > 0) {
@@ -213,7 +210,7 @@
                 `).join('');
             }
 
-            // Render Recent Activity
+           
             const activityList = document.getElementById('activity-list');
             const activities = [
                 ...bids.map(b => ({ text: `Placed ₹${b.amount} bid for ${b.productName}`, date: new Date(b.timestamp) })),
@@ -236,7 +233,7 @@
             }
         }
 
-        // Real-time updates
+     
         State.listenToChanges(loadDashboardData);
 
         document.addEventListener('DOMContentLoaded', loadDashboardData);
