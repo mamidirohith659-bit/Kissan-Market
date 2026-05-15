@@ -1,10 +1,5 @@
-/**
- * Kissan Market - State Management logic
- * Handles localStorage for persistent data and real-time sync.
- */
-
 const State = {
-    // Exact keys requested by USER
+    
     keys: {
         products: 'products',
         bids: 'bids',
@@ -75,7 +70,7 @@ const State = {
             localStorage.setItem(this.keys.buyer_orders, JSON.stringify(dummyBuyerOrders));
         }
         
-        // Profiles
+    
         if (!localStorage.getItem('km_profiles')) {
             const dummyProfiles = {
                 1: { id: 1, name: 'Rajesh Kumar', email: 'rajesh@farmer.com', phone: '+91 98765 43210', location: 'Nashik, Maharashtra', role: 'farmer', image: 'https://images.unsplash.com/photo-1595273670150-db0a3d39074f?auto=format&fit=crop&q=80&w=200' },
@@ -84,7 +79,7 @@ const State = {
             localStorage.setItem('km_profiles', JSON.stringify(dummyProfiles));
         }
 
-        // Notifications
+   
         if (!localStorage.getItem('km_notifications')) {
             const dummyNotifs = [
                 { id: 1, userId: 1, title: 'New Bid Received', message: 'You received a bid of ₹45 for Organic Tomatoes.', read: false, timestamp: new Date().toISOString() },
@@ -97,7 +92,7 @@ const State = {
         setInterval(() => this.checkTimers(), 1000);
     },
 
-    // Data Accessors
+  
     getData(key) { return JSON.parse(localStorage.getItem(key)) || []; },
     saveData(key, data) { 
         localStorage.setItem(key, JSON.stringify(data)); 
@@ -118,7 +113,7 @@ const State = {
         return vendorId ? orders.filter(o => o.vendorId === vendorId) : orders;
     },
 
-    // Dynamic Statistics Calculation
+    
     getFarmerStats(farmerId) {
         const products = this.getProducts().filter(p => p.farmerId === farmerId);
         const bids = this.getBids().filter(b => b.farmerId === farmerId);
@@ -170,13 +165,13 @@ const State = {
             orders[orderIndex].status = status;
             this.saveData(this.keys.buyer_orders, orders);
             
-            // Add notification
+   
             const user = this.getCurrentUser();
             this.addNotification(user.id, `Order Update`, `Order #${orderId} has been ${status === 'Approved' ? 'Approved Successfully' : 'Rejected'}.`);
         }
     },
 
-    // User Auth & Profile
+
     setCurrentUser(user) { localStorage.setItem(this.keys.currentUser, JSON.stringify(user)); },
     getCurrentUser() { 
         const user = JSON.parse(localStorage.getItem(this.keys.currentUser));
@@ -188,16 +183,14 @@ const State = {
         localStorage.clear();
         sessionStorage.clear();
         
-        // Find relative path to root index.html
+    
         const path = window.location.pathname;
         let rootPath = './';
         
-        // GitHub Pages friendly relative path calculation
-        // If we are in /pages/...
+
         if (path.includes('/pages/')) {
             const partsAfterPages = path.split('/pages/')[1].split('/').filter(p => p.length > 0);
-            // partsAfterPages might be ['admin', 'dashboard.html'] (length 2)
-            // we need to go up: dashboard.html (1) -> admin (2) -> pages (3) -> root
+
             rootPath = '../'.repeat(partsAfterPages.length + 1);
         } else if (path.includes('/buyer/')) {
             const partsAfterBuyer = path.split('/buyer/')[1].split('/').filter(p => p.length > 0);
@@ -223,7 +216,7 @@ const State = {
         this.syncDashboards();
     },
 
-    // ACTIONS
+    
     addProduct(product) {
         const products = this.getData(this.keys.products);
         const newProduct = { ...product, id: Date.now(), status: 'Active', createdAt: new Date().toISOString() };
@@ -372,7 +365,6 @@ const State = {
 
 State.init();
 
-// Global helpers
 const addProduct = (p) => State.addProduct(p);
 const placeBid = (b) => State.placeBid(b);
 const acceptBid = (id) => State.acceptBid(id);
