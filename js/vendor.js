@@ -1,9 +1,5 @@
-/**
- * Kissan Market - Common UI Logic
- */
-
 const UI = {
-    // Theme Toggle
+  
     toggleTheme() {
         const body = document.body;
         const currentTheme = body.getAttribute('data-theme');
@@ -17,20 +13,19 @@ const UI = {
         document.body.setAttribute('data-theme', savedTheme);
     },
 
-    // Sidebar Toggle (Mobile)
     toggleSidebar() {
         const sidebar = document.querySelector('.sidebar');
         sidebar.classList.toggle('active');
     },
 
-    // Multi-Language Mock
+
     setLanguage(lang) {
         localStorage.setItem('km_lang', lang);
-        // In a real app, this would swap text content or reload with lang param
+
         alert(`Language changed to: ${lang}. This would refresh content in a full implementation.`);
     },
 
-    // Notification UI Helper
+
     showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.style.cssText = `
@@ -69,7 +64,7 @@ const UI = {
             badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
         });
         
-        // Sidebar link badge
+  
         const sidebarNotifLink = document.querySelector('a[href*="notifications.html"]');
         if (sidebarNotifLink) {
             let badgeSpan = sidebarNotifLink.querySelector('.notif-count');
@@ -99,19 +94,18 @@ const UI = {
     }
 };
 
-// Initialize UI
 document.addEventListener('DOMContentLoaded', () => {
     UI.initTheme();
     UI.updateNotificationBadges();
     
-    // Global Listeners
+
     const themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) themeBtn.addEventListener('click', UI.toggleTheme);
 
     const langSelect = document.getElementById('lang-select');
     if (langSelect) langSelect.addEventListener('change', (e) => UI.setLanguage(e.target.value));
 
-    // Real-time UI Sync
+
     State.listenToChanges(() => {
         UI.updateNotificationBadges();
     });

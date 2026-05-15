@@ -1,13 +1,9 @@
-/**
- * Kissan Market - Mock Chat System
- */
-
 const Chat = {
     isOpen: false,
     currentRecipient: 'Farmer',
     
     init() {
-        // Remove existing if any
+       
         const existing = document.getElementById('chat-widget');
         if (existing) existing.parentElement.remove();
 
@@ -39,7 +35,7 @@ const Chat = {
         div.innerHTML = chatHtml;
         document.body.appendChild(div);
 
-        // Enter key listener
+        
         document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.send();
         });
@@ -75,7 +71,7 @@ const Chat = {
         input.value = '';
         messages.scrollTop = messages.scrollHeight;
 
-        // Mock auto-reply
+      
         setTimeout(() => {
             const reply = document.createElement('div');
             reply.style.cssText = "background: white; padding: 0.8rem; border-radius: 15px 15px 15px 0; max-width: 80%; font-size: 0.9rem; align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
@@ -86,7 +82,7 @@ const Chat = {
     }
 };
 
-// Auto-init chat on dashboard pages
+
 if (window.location.pathname.includes('dashboard.html') || 
     window.location.pathname.includes('products.html') || 
     window.location.pathname.includes('marketplace.html') ||
