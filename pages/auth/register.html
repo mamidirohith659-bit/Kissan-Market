@@ -227,7 +227,7 @@
                 id: Date.now()
             };
 
-            // For common login, we must store the user in a way login can find them
+
             const users = JSON.parse(localStorage.getItem('km_users')) || [];
             users.push({ ...user, password: document.getElementById('password').value });
             localStorage.setItem('km_users', JSON.stringify(users));
@@ -235,7 +235,7 @@
             State.updateProfile(user);
             State.setCurrentUser(user);
 
-            // Redirect
+
             if (role === 'farmer') {
                 window.location.href = '../farmer/dashboard.html';
             } else if (role === 'vendor') {
