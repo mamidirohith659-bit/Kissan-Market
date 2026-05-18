@@ -1,226 +1,321 @@
-// CART DATA
+// ======================
+// GET CART DATA
+// ======================
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-const cartItems =
-document.getElementById("cartItems");
+const cartItems = document.getElementById("cartItems");
 
-// LOAD CART
+// ======================
+// LOAD CART ITEMS
+// ======================
 
-function loadCart(){
+function loadCart() {
 
-cartItems.innerHTML = "";
+    cartItems.innerHTML = "";
 
-let subtotal = 0;
+    let subtotal = 0;
 
-let itemCount = 0;
+    let itemCount = 0;
 
-cart.forEach((item,index)=>{
+    // EMPTY CART
 
-subtotal += item.price * item.qty;
+    if(cart.length === 0){
 
-itemCount += item.qty;
+        cartItems.innerHTML = `
+        
+        <div style="text-align:center; padding:30px;">
+            <h3>Your Cart Is Empty</h3>
+        </div>
 
-cartItems.innerHTML += `
+        `;
 
-<div class="product-card">
+        document.getElementById("subtotal").innerText = "₹0";
+        document.getElementById("tax").innerText = "₹0";
+        document.getElementById("total").innerText = "₹0";
+        document.getElementById("cartCount").innerText = "0 Items";
 
-<div class="product-left">
+        return;
+    }
 
-<img src="${item.image}"
-class="product-img">
+    // LOAD PRODUCTS
 
-<div>
+    cart.forEach((item, index) => {
 
-<div class="product-name">
-${item.name}
-</div>
+        // DEFAULT QUANTITY
 
-<div class="price">
-₹${item.price}
-</div>
+        if(!item.qty){
+            item.qty = 1;
+        }
 
-<div class="qty-box">
+        subtotal += item.price * item.qty;
 
-<button class="qty-btn"
-onclick="decreaseQty(${index})">
--
-</button>
+        itemCount += item.qty;
 
-<span>
-${item.qty}
-</span>
+        cartItems.innerHTML += `
 
-<button class="qty-btn"
-onclick="increaseQty(${index})">
-+
-</button>
+        <div class="product-card">
 
-</div>
+            <div class="product-left">
 
-<button class="remove-btn"
-onclick="removeItem(${index})">
+                <img src="${item.image}" class="product-img">
 
-Remove
+                <div>
 
-</button>
+                    <div class="product-name">
+                        ${item.name}
+                    </div>
 
-</div>
+                    <div class="price">
+                        ₹${item.price}
+                    </div>
 
-</div>
+                    <div class="qty-box">
 
-<h3>
-₹${item.price * item.qty}
-</h3>
+                        <button class="qty-btn"
+                        onclick="decreaseQty(${index})">
+                        -
+                        </button>
 
-</div>
+                        <span>${item.qty}</span>
 
-`;
+                        <button class="qty-btn"
+                        onclick="increaseQty(${index})">
+                        +
+                        </button>
 
-});
+                    </div>
 
-let tax = subtotal * 0.05;
+                    <button class="remove-btn"
+                    onclick="removeItem(${index})">
 
-let total = subtotal + tax + 50;
+                    Remove
 
-document.getElementById("subtotal")
-.innerText = "₹" + subtotal;
+                    </button>
 
-document.getElementById("tax")
-.innerText = "₹" + tax.toFixed(2);
+                </div>
 
-document.getElementById("total")
-.innerText = "₹" + total.toFixed(2);
+            </div>
 
-document.getElementById("cartCount")
-.innerText = itemCount + " Items";
+            <h3>
+                ₹${item.price * item.qty}
+            </h3>
 
-localStorage.setItem(
-"cart",
-JSON.stringify(cart)
-);
+        </div>
 
+        `;
+    });
+
+    // TAX & TOTAL
+
+    let shipping = 50;
+
+    let tax = subtotal * 0.05;
+
+    let total = subtotal + shipping + tax;
+
+    document.getElementById("subtotal").innerText =
+    "₹" + subtotal.toFixed(2);
+
+    document.getElementById("tax").innerText =
+    "₹" + tax.toFixed(2);
+
+    document.getElementById("total").innerText =
+    "₹" + total.toFixed(2);
+
+    document.getElementById("cartCount").innerText =
+    itemCount + " Items";
+
+    // SAVE UPDATED CART
+
+    localStorage.setItem(
+        "cart",
+        JSON.stringify(cart)
+    );
 }
 
-// INCREASE
+// ======================
+// INCREASE QTY
+// ======================
 
 function increaseQty(index){
 
-cart[index].qty++;
+    cart[index].qty++;
 
-loadCart();
+    saveCart();
 
 }
 
-// DECREASE
+// ======================
+// DECREASE QTY
+// ======================
 
 function decreaseQty(index){
 
-if(cart[index].qty > 1){
+    if(cart[index].qty > 1){
 
-cart[index].qty--;
+        cart[index].qty--;
+
+    }
+
+    saveCart();
 
 }
 
-loadCart();
-
-}
-
-// REMOVE
+// ======================
+// REMOVE ITEM
+// ======================
 
 function removeItem(index){
 
-cart.splice(index,1);
+    cart.splice(index, 1);
 
-loadCart();
+    saveCart();
 
 }
 
-// SHIPPING
+// ======================
+// SAVE CART
+// ======================
+
+function saveCart(){
+
+    localStorage.setItem(
+        "cart",
+        JSON.stringify(cart)
+    );
+
+    loadCart();
+}
+
+// ======================
+// SHIPPING PAGE
+// ======================
 
 function goShipping(){
 
-if(cart.length == 0){
+    if(cart.length === 0){
 
-alert("Cart Is Empty");
+        alert("Cart Is Empty");
 
-return;
+        return;
+    }
 
+    document.getElementById("cartSection")
+    .style.display = "none";
+
+    document.getElementById("shippingSection")
+    .style.display = "block";
+
+    document.getElementById("step2")
+    .classList.add("active");
 }
 
-document.getElementById("cartSection")
-.style.display = "none";
-
-document.getElementById("shippingSection")
-.style.display = "block";
-
-document.getElementById("step2")
-.classList.add("active");
-
-}
-
-// PAYMENT
+// ======================
+// PAYMENT PAGE
+// ======================
 
 function goPayment(){
 
-const name =
-document.getElementById("name").value;
+    const name =
+    document.getElementById("name").value.trim();
 
-const phone =
-document.getElementById("phone").value;
+    const phone =
+    document.getElementById("phone").value.trim();
 
-const address =
-document.getElementById("address").value;
+    const address =
+    document.getElementById("address").value.trim();
 
-const city =
-document.getElementById("city").value;
+    const city =
+    document.getElementById("city").value.trim();
 
-const pincode =
-document.getElementById("pincode").value;
+    const pincode =
+    document.getElementById("pincode").value.trim();
 
-if(!name || !phone || !address || !city || !pincode){
+    // VALIDATION
 
-alert("Please Fill All Fields");
+    if(!name || !phone || !address || !city || !pincode){
 
-return;
+        alert("Please Fill All Fields");
 
+        return;
+    }
+
+    // STORE SHIPPING DATA
+
+    const shippingData = {
+        name,
+        phone,
+        address,
+        city,
+        pincode
+    };
+
+    localStorage.setItem(
+        "shippingData",
+        JSON.stringify(shippingData)
+    );
+
+    document.getElementById("shippingSection")
+    .style.display = "none";
+
+    document.getElementById("paymentSection")
+    .style.display = "block";
+
+    document.getElementById("step3")
+    .classList.add("active");
 }
 
-document.getElementById("shippingSection")
-.style.display = "none";
-
-document.getElementById("paymentSection")
-.style.display = "block";
-
-document.getElementById("step3")
-.classList.add("active");
-
-}
-
+// ======================
 // PLACE ORDER
+// ======================
 
 function placeOrder(){
 
-document.getElementById("paymentSection")
-.style.display = "none";
+    const paymentMethod =
+    document.getElementById("paymentMethod").value;
 
-document.getElementById("successSection")
-.style.display = "block";
+    const orderNumber =
+    "KM" + Math.floor(Math.random() * 100000);
 
-document.getElementById("step4")
-.classList.add("active");
+    // STORE ORDER
 
-const orderNumber =
-"KM" + Math.floor(Math.random()*100000);
+    const orderData = {
+        orderId: orderNumber,
+        items: cart,
+        payment: paymentMethod,
+        date: new Date().toLocaleString()
+    };
 
-document.getElementById("orderId")
-.innerText =
-"Order ID : " + orderNumber;
+    localStorage.setItem(
+        "lastOrder",
+        JSON.stringify(orderData)
+    );
 
-localStorage.removeItem("cart");
+    // SHOW SUCCESS
 
+    document.getElementById("paymentSection")
+    .style.display = "none";
+
+    document.getElementById("successSection")
+    .style.display = "block";
+
+    document.getElementById("step4")
+    .classList.add("active");
+
+    document.getElementById("orderId")
+    .innerText =
+    "Order ID : " + orderNumber;
+
+    // CLEAR CART
+
+    localStorage.removeItem("cart");
+
+    cart = [];
 }
 
+// ======================
 // INITIAL LOAD
+// ======================
 
 loadCart();
