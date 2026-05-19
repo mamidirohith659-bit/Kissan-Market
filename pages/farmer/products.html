@@ -6,6 +6,7 @@
     <title>My Products - Kissan Market</title>
     <link rel="stylesheet" href="../../css/style.css" />
     <link rel="stylesheet" href="../../css/farmer.css" />
+    <link rel="stylesheet" href="../../css/responsive.css" />
     <style>
       .modal {
         display: none;
@@ -148,9 +149,12 @@
         </div>
       </aside>
 
-      <main class="main-content">
-        <header class="header">
-          <div class="header-left"><h2>My Products</h2></div>
+        <main class="main-content">
+          <header class="header">
+            <div class="header-left">
+              <button class="hamburger" onclick="UI.toggleSidebar()" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;font-size:1.4rem;background:none;border:none;color:var(--primary-color);cursor:pointer;margin-right:0.6rem;">☰</button>
+              <h2>My Products</h2>
+            </div>
           <div class="header-right">
             <button class="btn btn-primary" onclick="toggleModal(true)">
               + Add New Product
@@ -353,6 +357,7 @@
     </div>
 
     <script src="../../js/app.js"></script>
+    <script src="../../js/ui.js"></script>
     <script src="../../js/farmer.js"></script>
     <script>
       function renderProducts() {

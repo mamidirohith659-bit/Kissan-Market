@@ -6,7 +6,21 @@
     <title>Farmer Analytics - Kissan Market</title>
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/farmer.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+    <style>
+        /* toggle bar mobile styling */
+        .hamburger { display:none; cursor:pointer; background:none; border:none; color:var(--primary-color); }
+        @media (max-width: 992px) {
+            .hamburger { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; font-size:1.4rem; margin-right:0.9rem; padding:0; }
+            .header { padding: 0 1rem; }
+            .header-right { gap: 0.8rem; }
+            .sidebar { transform: translateX(-100%); position: fixed; top:0; left:0; height:100vh; z-index:2000; box-shadow: 10px 0 30px rgba(0,0,0,0.15); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left:0; }
+        }
+    </style>
     <script src="../../js/chat.js" defer></script>
+    <script src="../../js/ui.js"></script>
 </head>
 <body>
 
@@ -56,7 +70,10 @@
 
         <main class="main-content">
             <header class="header">
-                <div class="header-left"><h2>Sales & Earnings Analytics</h2></div>
+                <div class="header-left">
+                    <button class="hamburger" onclick="UI.toggleSidebar()" style="display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; font-size:1.4rem; background:none; border:none; color:var(--primary-color); cursor:pointer; margin-right:0.9rem;">☰</button>
+                    <h2>Sales & Earnings Analytics</h2>
+                </div>
                 <div class="header-right"><div class="user-profile"><div class="avatar">F</div></div></div>
             </header>
 
